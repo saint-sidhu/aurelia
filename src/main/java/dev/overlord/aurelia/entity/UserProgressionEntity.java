@@ -15,16 +15,18 @@ import lombok.Setter;
 public class UserProgressionEntity {
 
     @Id
-    @Column(name ="id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
-
     @Column(name = "user_id")
     private int userId;
+
+    @OneToOne
+    @MapsId
+    @JoinColumn(name = "user_id", referencedColumnName = "user_id")
+    private UserDetailsEntity userDetailsEntity;
 
     @Column(name = "xp")
     private int xp;
 
-    @Column(name ="level")
+    @Column(name = "level")
     private int level;
 }
+

@@ -1,49 +1,51 @@
-CREATE SEQUENCE overlord_aurelia.currency_tier_sequence
-START WITH 1
-INCREMENT BY 1
-
-CREATE TABLE overlord_aurelia.currency_tier (
-    tier_id INT PRIMARY KEY,
-    tier_name VARCHAR(10) NOT NULL,
-    tier_description TEXT
+CREATE TABLE IF NOT EXISTS overlord_aurelia.currency_details (
+    currency_id SERIAL PRIMARY KEY,
+    currency_name VARCHAR(255),
+    currency_rarity VARCHAR(255),
+    currency_tier VARCHAR(10)
 );
 
-CREATE SEQUENCE overlord_aurelia.currency_sequence
-START WITH 1
-INCREMENT BY 1
-
-CREATE TABLE overlord_aurelia.currency_details (
-    currency_id INT PRIMARY KEY,
-    currency_name VARCHAR(50) NOT NULL,
-    currency_tier VARCHAR(10) NOT NULL,
-    tier_id INT,
-    FOREIGN KEY (tier_id) REFERENCES overlord_aurelia.currency_tier (tier_id)
+CREATE TABLE IF NOT EXISTS overlord_aurelia.user_balance (
+    id SERIAL PRIMARY KEY,
+    user_id INT NOT NULL UNIQUE,
+    currency_id INT NOT NULL UNIQUE,
+    balance INT,
+    created_date_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_date_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES overlord_aurelia.user_details(user_id) ON DELETE CASCADE,
+    FOREIGN KEY (currency_id) REFERENCES overlord_aurelia.currency_details(currency_id) ON DELETE CASCADE
 );
 
-CREATE SEQUENCE overlord_aurelia.user_sequence
-START WITH 1
-INCREMENT BY 1
+-- Trigger function to auto-update updated_date_time
+CREATE OR REPLACE FUNCTION overlord_aurelia.update_updated_date_time()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.updated_date_time = CURRENT_TIMESTAMP;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
 
-CREATE TABLE overlord_aurelia.user_details (
-    user_id INT PRIMARY KEY,
-    user_name VARCHAR(255) NOT NULL,
-    xp INT DEFAULT 0,
-    level INT DEFAULT 1,
+
+CREATE TABLE IF NOT EXISTS overlord_aurelia.user_progression (
+    id SERIAL PRIMARY KEY,
+    user_id INT NOT NULL UNIQUE,
+    xp INT,
+    level INT,
+    FOREIGN KEY (user_id) REFERENCES overlord_aurelia.user_details(user_id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS overlord_aurelia.user_details (
+    user_id SERIAL PRIMARY KEY,
+    user_name VARCHAR(255),
     created_date_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_date_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE SEQUENCE overlord_aurelia.user_balance_sequence
-START WITH 1
-INCREMENT BY 1
-
-CREATE TABLE overlord_aurelia.user_balance (
-    id INT PRIMARY KEY,
-    user_id INT NOT NULL,
-    currency_id INT NOT NULL,
-    balance INT DEFAULT 0,
-    created_date_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_date_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES overlord_aurelia.user_details (user_id),
-    FOREIGN KEY (currency_id) REFERENCES overlord_aurelia.currency_details (currency_id)
-);
+-- Trigger function to auto-update updated_date_time
+CREATE OR REPLACE FUNCTION overlord_aurelia.update_user_details_timestamp()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.updated_date_time = CURRENT_TIMESTAMP;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;

@@ -1,7 +1,7 @@
 package dev.overlord.aurelia.serviceImpl;
 
+import dev.overlord.aurelia.entity.CurrencyDetailsEntity;
 import dev.overlord.aurelia.entity.ShopItemEntity;
-import dev.overlord.aurelia.entity.UserBalanceEntity;
 import dev.overlord.aurelia.entity.UserDataEntity;
 import dev.overlord.aurelia.repository.*;
 import dev.overlord.aurelia.service.WorldEssenceService;
@@ -43,9 +43,13 @@ public class WorldEssenceServiceImpl implements WorldEssenceService {
 
     @Override
     public int begsMoney(String user) {
+
         int coins = generateUniqueNumber();
         //Make the coins as copper coins and then update in user balance
-        UserBalanceEntity userBalanceEntity = userBalanceRepo.findByUserName(user);
+
+        CurrencyDetailsEntity copperCoinsEntity = currencyDetailsRepo.findByCurrencyTier("C");
+        int copperId = copperCoinsEntity.getCurrencyId();
+
         UserDataEntity userDataEntity = userDataRepo.findByUserName(user);
         if (userDataEntity != null) {
             userDataEntity.setBalance(userDataEntity.getBalance() + coins);

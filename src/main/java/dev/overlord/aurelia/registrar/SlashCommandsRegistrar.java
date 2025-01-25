@@ -18,26 +18,29 @@ public class SlashCommandsRegistrar extends ListenerAdapter {
     public void onGuildJoin(GuildJoinEvent event) {
         //Guild level local command for when bot is already running and we add
         //it to a new guild
-        //event.getGuild().updateCommands().addCommands(commandsDataList()).queue();
+        event.getGuild().updateCommands().addCommands(getCommandsDataList()).queue();
     }
 
     @Override
     public void onGuildReady(GuildReadyEvent event) {
         //Guild level local command for when
         // the bot is already present in guild and running as well
-        event.getGuild().updateCommands().addCommands(new ArrayList<>()).queue();
+
+        event.getGuild().updateCommands().addCommands(getCommandsDataList()).queue();
 
     }
 
     @Override
     public void onReady(ReadyEvent event) {
         //Global commands
-        event.getJDA().updateCommands().addCommands(commandsDataList()).queue();
+        event.getJDA().updateCommands().addCommands(getCommandsDataList()).queue();
+        //event.getJDA().updateCommands().addCommands(new ArrayList<>()).queue();
     }
 
-    public List<CommandData> commandsDataList (){
+    public List<CommandData> getCommandsDataList (){
         List<CommandData> commandDataList = new ArrayList<>();
         commandDataList.add(Commands.slash("beg","Don’t expect me to care how you use them."));
+        commandDataList.add(Commands.slash("kneel","Get on your knees, human."));
         return commandDataList;
     }
 }

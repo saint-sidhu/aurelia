@@ -3,6 +3,7 @@ package dev.overlord.aurelia.config;
 import dev.overlord.aurelia.events.MessageEvent;
 import dev.overlord.aurelia.registrar.SlashCommandsRegistrar;
 import dev.overlord.aurelia.slashcommands.BuyItemsSlashCommand;
+import dev.overlord.aurelia.slashcommands.UserRegistrationSlashCommand;
 import io.github.cdimascio.dotenv.Dotenv;
 import lombok.Getter;
 import net.dv8tion.jda.api.OnlineStatus;
@@ -37,5 +38,6 @@ public class AureliaConfig {
         shardManager.addEventListener(new MessageEvent());
         shardManager.addEventListener(applicationContext.getBean(SlashCommandsRegistrar.class));
         shardManager.addEventListener(applicationContext.getBean(BuyItemsSlashCommand.class));
+        shardManager.addEventListener(applicationContext.getBean(UserRegistrationSlashCommand.class));
     }
 }

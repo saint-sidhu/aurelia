@@ -23,13 +23,12 @@ public class UserBalanceEntity {
     @Column(name = "id")
     private int id;
 
-
-    @ManyToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "user_id", insertable = false, updatable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", referencedColumnName = "user_id", nullable = false)
     private UserDetailsEntity userDetailsEntity;
 
-    @ManyToOne
-    @JoinColumn(name = "currency_id", referencedColumnName = "currency_id", insertable = false, updatable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "currency_id", referencedColumnName = "currency_id", nullable = false)
     private CurrencyDetailsEntity currencyDetailsEntity;
 
     @Column(name = "balance")

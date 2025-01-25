@@ -37,7 +37,7 @@ public class BuyItemsSlashCommand extends ListenerAdapter {
             embedBuilder.setTitle("Ah, Back for Scraps Again?");
             embedBuilder.setColor(Color.pink);
             embedBuilder.setDescription("Didn’t think you’d survive without this, huh? Here’s your daily dose of mediocrity");
-            embedBuilder.setThumbnail("https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.freepik.com%2Fpremium-ai-image%2Fhand-beggar-with-some-coins-begging-money-povertyhungeranxietybankrupt-concept_314518928.htm&psig=AOvVaw1-NDsWdW7fdgjHH3lBJy14&ust=1737844537276000&source=images&cd=vfe&opi=89978449&ved=0CBQQjRxqFwoTCIjD5Mq1j4sDFQAAAAAdAAAAABAE");
+            embedBuilder.setThumbnail("https://imgs.search.brave.com/fjCA8-b02aL1wavoh91tWricMlrp1Eu-wgYT5ZjoPnE/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly90NC5m/dGNkbi5uZXQvanBn/LzA5LzE2Lzc2LzIx/LzM2MF9GXzkxNjc2/MjE5M19zd0dQMzZT/OUlCaHBOSDlRNmg1/b3ZxdFlhd1hQN2ho/SC5qcGc");
             embedBuilder.setFooter("Come back tomorrow for more humiliation. I’ll be here.");
             event.getChannel()
                     .sendMessageEmbeds(embedBuilder.build())

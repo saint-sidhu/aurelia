@@ -11,11 +11,11 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.time.LocalDateTime;
 
 @Entity
+@Table(name = "user_details", schema = "overlord_aurelia")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "user_details", schema = "overlord_aurelia")
 public class UserDetailsEntity {
 
     @Id
@@ -26,8 +26,7 @@ public class UserDetailsEntity {
     @Column(name = "user_name")
     private String userName;
 
-    @OneToOne(cascade = CascadeType.ALL ,fetch = FetchType.EAGER)
-    @JoinColumn(name = "user_id" , referencedColumnName = "user_id" , nullable = false , unique = true)
+    @OneToOne(mappedBy = "userDetailsEntity", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private UserProgressionEntity userProgressionEntity;
 
     @CreationTimestamp
@@ -38,3 +37,4 @@ public class UserDetailsEntity {
     @Column(name = "updated_date_time")
     private LocalDateTime updatedDateTime;
 }
+
