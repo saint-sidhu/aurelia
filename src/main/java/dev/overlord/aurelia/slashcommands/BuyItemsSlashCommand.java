@@ -1,11 +1,13 @@
 package dev.overlord.aurelia.slashcommands;
 
+import dev.overlord.aurelia.AureliaCommon;
 import dev.overlord.aurelia.serviceImpl.WorldEssenceServiceImpl;
 import io.github.cdimascio.dotenv.Dotenv;
 import lombok.Getter;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,15 +26,18 @@ public class BuyItemsSlashCommand extends ListenerAdapter {
     @Autowired
     private WorldEssenceServiceImpl worldEssenceService;
 
+    @Autowired
+    private AureliaCommon aureliaCommon;
+
     public BuyItemsSlashCommand() {
         config = Dotenv.configure().load();
     }
 
     @Override
-    public void onSlashCommandInteraction(SlashCommandInteractionEvent event) {
-
+    public void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event) {
+        boolean kneelFlag = aureliaCommon.checkIfUserHasKneeled(event);
         String command = event.getName();
-        if (command.equals("beg")) {
+        if (command.equals("beg") && kneelFlag) {
             EmbedBuilder embedBuilder = new EmbedBuilder();
             embedBuilder.setTitle("Ah, Back for Scraps Again?");
             embedBuilder.setColor(Color.pink);
@@ -50,3 +55,5 @@ public class BuyItemsSlashCommand extends ListenerAdapter {
 
     }
 }
+
+
