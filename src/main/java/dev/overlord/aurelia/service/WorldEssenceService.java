@@ -7,5 +7,5 @@ public interface WorldEssenceService {
 
     ShopItemEntity buyItems();
 
-    int begsMoney(String user);
+    String begsMoney(String user);
 }

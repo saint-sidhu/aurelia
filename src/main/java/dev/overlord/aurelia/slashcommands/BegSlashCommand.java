@@ -1,6 +1,7 @@
 package dev.overlord.aurelia.slashcommands;
 
-import dev.overlord.aurelia.AureliaCommon;
+import dev.overlord.aurelia.common.AureliaCommonUtils;
+import dev.overlord.aurelia.constants.WorldEssenceEnum;
 import dev.overlord.aurelia.serviceImpl.WorldEssenceServiceImpl;
 import io.github.cdimascio.dotenv.Dotenv;
 import lombok.Getter;
@@ -8,17 +9,13 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.awt.*;
 
 @Component
-public class BuyItemsSlashCommand extends ListenerAdapter {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(BuyItemsSlashCommand.class);
+public class BegSlashCommand extends ListenerAdapter {
 
     @Getter
     private final Dotenv config;
@@ -27,9 +24,9 @@ public class BuyItemsSlashCommand extends ListenerAdapter {
     private WorldEssenceServiceImpl worldEssenceService;
 
     @Autowired
-    private AureliaCommon aureliaCommon;
+    private AureliaCommonUtils aureliaCommon;
 
-    public BuyItemsSlashCommand() {
+    public BegSlashCommand() {
         config = Dotenv.configure().load();
     }
 
@@ -48,9 +45,11 @@ public class BuyItemsSlashCommand extends ListenerAdapter {
                     .sendMessageEmbeds(embedBuilder.build())
                     .queue();
             event.deferReply().setEphemeral(true).queue();
-            int begAmount = worldEssenceService.begsMoney(event.getUser().getEffectiveName());
-            event.getHook().sendMessage("Here are " + begAmount + " copper cinders for licking my shoes clean!\n"
-                    + "Now move outta my way , pest!").queue();
+            String begAmountAndRarity = worldEssenceService.begsMoney(event.getUser().getEffectiveName());
+            String begAmount = begAmountAndRarity.substring(0, 3);
+            WorldEssenceEnum essenceEnum = WorldEssenceEnum.getByTier(begAmountAndRarity.substring(3));
+            event.getHook().sendMessage("Here are " + begAmount + " " + essenceEnum.getName()
+                    + " for licking my shoes clean!\n" + "Now move outta my way , pest!").queue();
         }
 
     }

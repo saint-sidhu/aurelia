@@ -1,4 +1,4 @@
-package dev.overlord.aurelia;
+package dev.overlord.aurelia.common;
 
 import dev.overlord.aurelia.constants.AureliaConstants;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 import java.awt.*;
 
 @Component
-public class AureliaCommon  {
+public class AureliaCommonUtils  {
 
     public boolean checkIfUserHasKneeled(SlashCommandInteractionEvent event){
         Member member = event.getMember();

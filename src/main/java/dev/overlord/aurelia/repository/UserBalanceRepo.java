@@ -10,4 +10,7 @@ public interface UserBalanceRepo extends JpaRepository<UserBalanceEntity,Integer
 
     @Query(value = "SELECT * FROM overlord_aurelia.user_balance WHERE user_name = ?1", nativeQuery = true)
     UserBalanceEntity findByUserName(String user);
+
+    @Query(value = "SELECT * FROM overlord_aurelia.user_balance WHERE currency_id = ?1", nativeQuery = true)
+    UserBalanceEntity findByCurrencyId(int currencyId);
 }

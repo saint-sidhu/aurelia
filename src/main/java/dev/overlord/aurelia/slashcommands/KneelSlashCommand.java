@@ -1,8 +1,10 @@
 package dev.overlord.aurelia.slashcommands;
 
+import dev.overlord.aurelia.constants.AureliaConstants;
 import dev.overlord.aurelia.serviceImpl.UserRegistrationServiceImpl;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
@@ -14,7 +16,7 @@ import org.springframework.stereotype.Component;
 import java.awt.*;
 
 @Component
-public class UserRegistrationSlashCommand extends ListenerAdapter {
+public class KneelSlashCommand extends ListenerAdapter {
 
     @Autowired
     private UserRegistrationServiceImpl userRegistrationService;
@@ -60,6 +62,10 @@ public class UserRegistrationSlashCommand extends ListenerAdapter {
                         .sendMessageEmbeds(embedBuilder.build()).queue();
                 event.deferReply().setEphemeral(true).queue();
                 event.getHook().sendMessage(message).queue();
+                Role roleName = event.getGuild().getRoleById(AureliaConstants.SERVANT_BOT_TESTING_ROLE_ID);
+                event.getMember().getRoles().add(roleName);
+                event.getChannel().sendMessage(event.getMember().getAsMention()+" , you have have been granted the " +
+                        roleName.getAsMention() +"role").queue();
             } else {
                 event.deferReply().setEphemeral(true).queue();
                 event.getHook().sendMessage("Keep bending your knee , you spec of useless dust!").queue();
