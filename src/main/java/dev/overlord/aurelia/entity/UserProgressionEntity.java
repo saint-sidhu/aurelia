@@ -18,7 +18,7 @@ public class UserProgressionEntity {
     @Column(name = "user_id")
     private int userId;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     @MapsId
     @JoinColumn(name = "user_id", referencedColumnName = "user_id")
     private UserDetailsEntity userDetailsEntity;

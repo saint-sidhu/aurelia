@@ -11,6 +11,7 @@ import dev.overlord.aurelia.repository.UserBalanceRepo;
 import dev.overlord.aurelia.repository.UserDetailsRepo;
 import dev.overlord.aurelia.service.WorldEssenceService;
 import jakarta.transaction.Transactional;
+import net.dv8tion.jda.internal.utils.tuple.Pair;
 import org.springframework.stereotype.Service;
 
 import java.util.Random;
@@ -41,7 +42,7 @@ public class WorldEssenceServiceImpl implements WorldEssenceService {
     }
 
     @Override
-    public String begsMoney(String user) {
+    public Pair<String,Integer> begsMoney(String user) {
 
         int coins = generateUniqueNumber();
         //Make the coins as copper coins and then update in user balance
@@ -50,6 +51,7 @@ public class WorldEssenceServiceImpl implements WorldEssenceService {
                 (WorldEssenceEnum.COPPER_CINDERS.getTier());
 
         UserDetailsEntity userDetailsEntity = userDetailsRepo.findByUserName(user);
+        int userid = userDetailsEntity.getUserId();
         //userDetailsEntity will never be null because the user has been registered with '/kneel'.
 
         UserBalanceEntity userBalanceEntity = userBalanceRepo.findByCurrencyId(currencyDetailsEntity.getCurrencyId());
@@ -63,20 +65,22 @@ public class WorldEssenceServiceImpl implements WorldEssenceService {
             userBalanceEntity.setCurrencyDetailsEntity(currencyDetailsEntity);
             userBalanceRepo.save(userBalanceEntity);
         }
-        return coins + "C";
+        String coinsAndTier = coins + currencyDetailsEntity.getCurrencyTier();
+        return Pair.of(coinsAndTier, userid);
     }
 
     private int generateUniqueNumber() {
         Random random = new Random();
 
         // Generate a random number between 1 and 100 with a 70% chance
-        if (random.nextDouble() < 0.85) {
-            // 70% chance to select from 1-100
-            return random.nextInt(100, 200);
-        } else {
+        if (random.nextDouble() < 0.60) {
+            // 60% chance to select from 1-100
+            return random.nextInt(100, 150);
+        } else if(random.nextDouble() < 0.90 && random.nextDouble()>0.5){
             // 30% chance to select from 101-200
-            return random.nextInt(200, 500);
-
+            return random.nextInt(200, 400);
+        } else {
+            return random.nextInt(400, 500);
         }
     }
 }

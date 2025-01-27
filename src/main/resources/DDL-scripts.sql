@@ -49,3 +49,11 @@ BEGIN
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
+
+
+CREATE TABLE IF NOT EXISTS overlord_aurelia.levels (
+    level_id INT PRIMARY KEY,
+    level_name VARCHAR(255) NOT NULL,
+    level_description TEXT NOT NULL,
+    threshold_xp INT NOT NULL
+);
