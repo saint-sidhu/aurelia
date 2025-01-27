@@ -1,19 +1,14 @@
 package dev.overlord.aurelia.serviceImpl;
 
+import dev.overlord.aurelia.constants.CommandDetailsEnum;
 import dev.overlord.aurelia.constants.WorldEssenceEnum;
-import dev.overlord.aurelia.entity.CurrencyDetailsEntity;
-import dev.overlord.aurelia.entity.ShopItemEntity;
-import dev.overlord.aurelia.entity.UserBalanceEntity;
-import dev.overlord.aurelia.entity.UserDetailsEntity;
-import dev.overlord.aurelia.repository.CurrencyDetailsRepo;
-import dev.overlord.aurelia.repository.ShopItemRepo;
-import dev.overlord.aurelia.repository.UserBalanceRepo;
-import dev.overlord.aurelia.repository.UserDetailsRepo;
+import dev.overlord.aurelia.entity.*;
+import dev.overlord.aurelia.repository.*;
 import dev.overlord.aurelia.service.WorldEssenceService;
 import jakarta.transaction.Transactional;
-import net.dv8tion.jda.internal.utils.tuple.Pair;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Random;
 
 @Service
@@ -27,13 +22,16 @@ public class WorldEssenceServiceImpl implements WorldEssenceService {
 
     private final CurrencyDetailsRepo currencyDetailsRepo;
 
+    private final UserCooldownRepo userCooldownRepo;
+
     public WorldEssenceServiceImpl(ShopItemRepo shopItemRepo,
                                    UserDetailsRepo userDetailsRepo, UserBalanceRepo userBalanceRepo,
-                                   CurrencyDetailsRepo currencyDetailsRepo) {
+                                   CurrencyDetailsRepo currencyDetailsRepo, UserCooldownRepo userCooldownRepo) {
         this.shopItemRepo = shopItemRepo;
         this.userDetailsRepo = userDetailsRepo;
         this.userBalanceRepo = userBalanceRepo;
         this.currencyDetailsRepo = currencyDetailsRepo;
+        this.userCooldownRepo = userCooldownRepo;
     }
 
     @Override
@@ -42,7 +40,7 @@ public class WorldEssenceServiceImpl implements WorldEssenceService {
     }
 
     @Override
-    public Pair<String,Integer> begsMoney(String user) {
+    public String begsMoney(String user) {
 
         int coins = generateUniqueNumber();
         //Make the coins as copper coins and then update in user balance
@@ -51,13 +49,26 @@ public class WorldEssenceServiceImpl implements WorldEssenceService {
                 (WorldEssenceEnum.COPPER_CINDERS.getTier());
 
         UserDetailsEntity userDetailsEntity = userDetailsRepo.findByUserName(user);
-        int userid = userDetailsEntity.getUserId();
+        int userId = userDetailsEntity.getUserId();
         //userDetailsEntity will never be null because the user has been registered with '/kneel'.
-
+        UserCooldownEntity userCooldownEntity = userCooldownRepo.findByUserId(userId);
+        if (userCooldownEntity == null) {
+            userCooldownEntity = new UserCooldownEntity();
+            userCooldownEntity.setUserDetailsEntity(userDetailsEntity);
+            userCooldownEntity.setCommandId(String.valueOf(CommandDetailsEnum.BEG_COMMAND.getId()));
+            userCooldownEntity.setLastCommandTime(LocalDateTime.now());
+            userCooldownEntity.setLockedTillTime(LocalDateTime.now().plusHours
+                    (CommandDetailsEnum.BEG_COMMAND.getCooldownInHours()));
+            userCooldownRepo.saveAndFlush(userCooldownEntity);
+        }
         UserBalanceEntity userBalanceEntity = userBalanceRepo.findByCurrencyId(currencyDetailsEntity.getCurrencyId());
         if (userBalanceEntity != null) {
             userBalanceEntity.setBalance(userBalanceEntity.getBalance() + coins);
+            userCooldownEntity.setLastCommandTime(LocalDateTime.now());
+            userCooldownEntity.setLockedTillTime(LocalDateTime.now().plusHours
+                    (CommandDetailsEnum.BEG_COMMAND.getCooldownInHours()));
             userBalanceRepo.saveAndFlush(userBalanceEntity);
+            userCooldownRepo.saveAndFlush(userCooldownEntity);
         } else {
             userBalanceEntity = new UserBalanceEntity();
             userBalanceEntity.setBalance(coins);
@@ -65,8 +76,8 @@ public class WorldEssenceServiceImpl implements WorldEssenceService {
             userBalanceEntity.setCurrencyDetailsEntity(currencyDetailsEntity);
             userBalanceRepo.save(userBalanceEntity);
         }
-        String coinsAndTier = coins + currencyDetailsEntity.getCurrencyTier();
-        return Pair.of(coinsAndTier, userid);
+
+        return coins + currencyDetailsEntity.getCurrencyTier();
     }
 
     private int generateUniqueNumber() {
@@ -76,7 +87,7 @@ public class WorldEssenceServiceImpl implements WorldEssenceService {
         if (random.nextDouble() < 0.60) {
             // 60% chance to select from 1-100
             return random.nextInt(100, 150);
-        } else if(random.nextDouble() < 0.90 && random.nextDouble()>0.5){
+        } else if (random.nextDouble() < 0.90 && random.nextDouble() > 0.5) {
             // 30% chance to select from 101-200
             return random.nextInt(200, 400);
         } else {

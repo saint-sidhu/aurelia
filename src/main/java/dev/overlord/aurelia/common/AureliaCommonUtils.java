@@ -1,25 +1,46 @@
 package dev.overlord.aurelia.common;
 
 import dev.overlord.aurelia.constants.AureliaConstants;
+import dev.overlord.aurelia.entity.UserCooldownEntity;
+import dev.overlord.aurelia.repository.UserCooldownRepo;
+import dev.overlord.aurelia.repository.UserDetailsRepo;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.internal.utils.tuple.Pair;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.awt.*;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Component
-public class AureliaCommonUtils  {
+public class AureliaCommonUtils {
+    @Autowired
+    private UserCooldownRepo userCooldownRepo;
 
-    public boolean checkIfUserHasKneeled(SlashCommandInteractionEvent event){
+    @Autowired
+    private UserDetailsRepo userDetailsRepo;
+
+    public Pair<Boolean, Integer> checkIfUserHasKneeled(SlashCommandInteractionEvent event) {
+        //This is a case where user hasn/t kneeled and uses "/beg" command.
+        if (userDetailsRepo.findByUserName(event.getMember().getEffectiveName()) == null)
+            return Pair.of(false, -1);
+        int userId = userDetailsRepo.findByUserName(Objects.requireNonNull(event.getMember()).getEffectiveName()).getUserId();
         Member member = event.getMember();
         Role roleName = member.getGuild().getRoleById(AureliaConstants.SERVANT_BOT_TESTING_ROLE_ID);
-        if(!member.getRoles().contains(roleName)){
+        if (!member.getRoles().contains(roleName)) {
             EmbedBuilder embedBuilder = new EmbedBuilder();
             embedBuilder.setTitle("Unworthy Wretch Detected");
-            embedBuilder.setDescription("You dare defy the sacred order? Your insolence knows no bounds, mortal! \n\n" +
-                    " **Use the '/kneel' command now! **"+"\n\n Bow down and prove your loyalty—or be cast aside like the insignificant speck you are.");
+            embedBuilder.setDescription("""
+                    You dare defy the sacred order? Your insolence knows no bounds, mortal!\s
+
+                     **Use the '/kneel' command now! **
+
+                     Bow down and prove your loyalty—or be cast aside like the insignificant speck you are.""");
             embedBuilder.setColor(Color.RED);
             embedBuilder.setFooter("Defy the command, and face eternal shame.");
             embedBuilder.setThumbnail(event.getUser().getEffectiveAvatarUrl());
@@ -27,8 +48,20 @@ public class AureliaCommonUtils  {
             event.getChannel()
                     .sendMessageEmbeds(embedBuilder.build())
                     .queue();
-            return false;
+            return Pair.of(false, userId);
         }
-        return true;
+        return Pair.of(true, userId);
+    }
+
+    public Pair<Boolean,Duration> isEligibleForNextCommand(int cooldownInHours, int userId) {
+        //userId is passed as -1 when it is a fresh user and he hasn't kneeled yet!
+        if (userId == -1) return Pair.of(true,Duration.ofHours(0));
+        LocalDateTime now = LocalDateTime.now();
+        UserCooldownEntity userCooldownEntity = userCooldownRepo.findByUserId(userId);
+        if (userCooldownEntity != null) {
+            LocalDateTime lastCommandTime = userCooldownEntity.getLastCommandTime();
+            Duration duration = Duration.between(lastCommandTime, now);
+            return Pair.of(duration.toHours() >= cooldownInHours,Duration.between(now,userCooldownEntity.getLockedTillTime()));
+        } else return Pair.of(true,Duration.ofHours(0));
     }
 }

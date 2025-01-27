@@ -8,5 +8,5 @@ public interface WorldEssenceService {
 
     ShopItemEntity buyItems();
 
-    Pair<String,Integer> begsMoney(String user);
+    String begsMoney(String user);
 }

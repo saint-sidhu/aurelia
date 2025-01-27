@@ -1,7 +1,7 @@
 package dev.overlord.aurelia.serviceImpl;
 
 import dev.overlord.aurelia.constants.LevelsEnum;
-import dev.overlord.aurelia.constants.XPRewardForEventsEnum;
+import dev.overlord.aurelia.constants.CommandDetailsEnum;
 import dev.overlord.aurelia.entity.UserDetailsEntity;
 import dev.overlord.aurelia.entity.UserProgressionEntity;
 import dev.overlord.aurelia.repository.UserDetailsRepo;
@@ -28,7 +28,7 @@ public class UserLevelUpServiceImpl implements UserLevelUpService {
         UserDetailsEntity userDetailsEntity = userDetailsRepo.findById(userId).orElse(null);
         boolean levelUpFlag = false;
         if (userProgressionEntity != null) {
-            userProgressionEntity.setXp(userProgressionEntity.getXp() + XPRewardForEventsEnum.BEG_COMMAND.getXpValue());
+            userProgressionEntity.setXp(userProgressionEntity.getXp() + CommandDetailsEnum.BEG_COMMAND.getXpValue());
             userProgressionEntity.setUserDetailsEntity(userDetailsEntity);
             while (userProgressionEntity.getXp() >= LevelsEnum.values()[userProgressionEntity.getLevel() - 1].getThresholdXP()) {
                 // Check current level threshold against XP
@@ -44,7 +44,7 @@ public class UserLevelUpServiceImpl implements UserLevelUpService {
         } else {
             userProgressionEntity = new UserProgressionEntity();
             userProgressionEntity.setUserDetailsEntity(userDetailsEntity);
-            userProgressionEntity.setXp(XPRewardForEventsEnum.BEG_COMMAND.getXpValue());
+            userProgressionEntity.setXp(CommandDetailsEnum.BEG_COMMAND.getXpValue());
             userProgressionEntity.setLevel(1);
             while (userProgressionEntity.getXp() >= LevelsEnum.values()[userProgressionEntity.getLevel() - 1].getThresholdXP()) {
                 // Check current level threshold against XP

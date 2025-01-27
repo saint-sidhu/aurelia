@@ -57,3 +57,11 @@ CREATE TABLE IF NOT EXISTS overlord_aurelia.levels (
     level_description TEXT NOT NULL,
     threshold_xp INT NOT NULL
 );
+
+CREATE TABLE overlord_aurelia.user_cooldown (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER UNIQUE,
+    command_id VARCHAR(255),
+    last_command_time TIMESTAMP,
+    CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES overlord_aurelia.user_details (user_id)
+);
