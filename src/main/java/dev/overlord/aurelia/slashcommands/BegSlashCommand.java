@@ -88,16 +88,7 @@ public class BegSlashCommand extends ListenerAdapter {
             event.deferReply().setEphemeral(true).queue();
             event.getHook().sendMessage("I wish begging were a crime in this realm...").queue();
         } else if (command.equals("beg")) {
-            EmbedBuilder embedBuilder = new EmbedBuilder();
-            embedBuilder.setTitle("Delusional Worm!");
-            embedBuilder.setDescription("I, Aurelia, hereby, on behalf of our supreme ruler, demand your submission. \n\n" + "**Use '/kneel' command first.**"
-                    + " \n\nBend your knee now to swear fealty to His infinite majesty, or crawl back into the void of irrelevance from which you came.");
-            embedBuilder.setThumbnail(event.getMember().getEffectiveAvatarUrl());
-            embedBuilder.setColor(Color.RED);
-            embedBuilder.setFooter("Kneeling is your salvation; disobedience, your doom.");
-            event.getChannel().sendMessageEmbeds(embedBuilder.build()).queue();
-            event.deferReply().setEphemeral(true).queue();
-            event.getHook().sendMessage("Submission is your only path to relevance.").queue();
+            aureliaCommon.askUserToKneelFirst(event);
         }
 
     }

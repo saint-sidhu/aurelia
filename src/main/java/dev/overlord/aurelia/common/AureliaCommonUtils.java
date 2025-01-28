@@ -64,4 +64,17 @@ public class AureliaCommonUtils {
             return Pair.of(duration.toHours() >= cooldownInHours,Duration.between(now,userCooldownEntity.getLockedTillTime()));
         } else return Pair.of(true,Duration.ofHours(0));
     }
+
+    public void askUserToKneelFirst(SlashCommandInteractionEvent event){
+        EmbedBuilder embedBuilder = new EmbedBuilder();
+        embedBuilder.setTitle("Delusional Worm!");
+        embedBuilder.setDescription("I, Aurelia, hereby, on behalf of our supreme ruler, demand your submission. \n\n" + "**Use '/kneel' command first.**"
+                + " \n\nBend your knee now to swear fealty to His infinite majesty, or crawl back into the void of irrelevance from which you came.");
+        embedBuilder.setThumbnail(event.getMember().getEffectiveAvatarUrl());
+        embedBuilder.setColor(Color.RED);
+        embedBuilder.setFooter("Kneeling is your salvation; disobedience, your doom.");
+        event.getChannel().sendMessageEmbeds(embedBuilder.build()).queue();
+        event.deferReply().setEphemeral(true).queue();
+        event.getHook().sendMessage("Submission is your only path to relevance.").queue();
+    }
 }

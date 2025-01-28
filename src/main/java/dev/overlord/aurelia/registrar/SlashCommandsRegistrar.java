@@ -34,13 +34,14 @@ public class SlashCommandsRegistrar extends ListenerAdapter {
     public void onReady(ReadyEvent event) {
         //Global commands
         //event.getJDA().updateCommands().addCommands(getCommandsDataList()).queue();
-        event.getJDA().updateCommands().addCommands(new ArrayList<>()).queue();
+        //event.getJDA().updateCommands().addCommands(new ArrayList<>()).queue();
     }
 
     public List<CommandData> getCommandsDataList (){
         List<CommandData> commandDataList = new ArrayList<>();
         commandDataList.add(Commands.slash("beg","Don’t expect me to care how you use them."));
         commandDataList.add(Commands.slash("kneel","Get on your knees, human."));
+        commandDataList.add(Commands.slash("progress","Want to check your awful level progress?"));
         return commandDataList;
     }
 }

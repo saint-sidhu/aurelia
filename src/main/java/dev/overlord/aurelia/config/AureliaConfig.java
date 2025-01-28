@@ -4,6 +4,7 @@ import dev.overlord.aurelia.events.MessageEvent;
 import dev.overlord.aurelia.registrar.SlashCommandsRegistrar;
 import dev.overlord.aurelia.slashcommands.BegSlashCommand;
 import dev.overlord.aurelia.slashcommands.KneelSlashCommand;
+import dev.overlord.aurelia.slashcommands.ProgressSlashCommand;
 import io.github.cdimascio.dotenv.Dotenv;
 import lombok.Getter;
 import net.dv8tion.jda.api.OnlineStatus;
@@ -40,5 +41,6 @@ public class AureliaConfig {
         shardManager.addEventListener(applicationContext.getBean(SlashCommandsRegistrar.class));
         shardManager.addEventListener(applicationContext.getBean(BegSlashCommand.class));
         shardManager.addEventListener(applicationContext.getBean(KneelSlashCommand.class));
+        shardManager.addEventListener(applicationContext.getBean(ProgressSlashCommand.class));
     }
 }
